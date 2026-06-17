@@ -1,0 +1,597 @@
+/*
+ * main.css
+ * 名片系統視覺樣式（毛玻璃銘牌版）
+ * 風格：沈穩精準的工匠金屬加工，拉絲鋁底 + 石墨藍
+ * 核心概念：名片像一塊從拉絲鋁表面凸出的半透毛玻璃銘牌
+ */
+
+/* ================================
+ * 1. 設計權杖（Design Tokens）
+ * ================================ */
+:root {
+  /* 色彩：拉絲鋁淺底 + 石墨藍強調（OKLCH） */
+  --color-bg: oklch(96% 0.004 250);            /* 拉絲鋁：近白冷灰 */
+  --color-bg-deep: oklch(91% 0.006 250);       /* 漸層深處 */
+  --color-surface: oklch(99% 0.002 250);       /* 純白略冷（玻璃基底） */
+  --color-surface-elevated: oklch(97% 0.003 250);
+  --color-ink: oklch(24% 0.005 250);           /* 深石墨，主要文字 */
+  --color-ink-muted: oklch(42% 0.006 250);     /* 次要文字，≥ 4.5:1 */
+  --color-ink-subtle: oklch(46% 0.006 250);    /* 標籤，≥ 4.5:1 */
+  --color-primary: oklch(40% 0.07 250);        /* 石墨藍：主強調 */
+  --color-primary-soft: oklch(50% 0.08 250);   /* 懸停、連結 */
+  --color-primary-deep: oklch(33% 0.06 250);   /* 按下狀態 */
+  --color-accent: oklch(58% 0.015 250);        /* 冷鋼灰：圖示、分隔 */
+  --color-border: oklch(88% 0.005 250);        /* 淺邊 */
+  --color-border-subtle: oklch(80% 0.008 250); /* hover 邊框 */
+  --color-highlight: oklch(100% 0 0 / 0.55);   /* 玻璃高光 */
+
+  /* 字體 */
+  --font-display: "Bree Serif", "Noto Serif TC", Georgia, serif;
+  --font-body: "Saira", "Noto Sans TC", "PingFang TC", sans-serif;
+
+  /* 字階 */
+  --text-display: clamp(2.75rem, 8vw, 4.5rem);
+  --text-headline: clamp(1.25rem, 3.5vw, 1.75rem);
+  --text-title: 0.875rem;
+  --text-body: 1rem;
+  --text-label: 0.6875rem;
+
+  /* 間距 */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-xxl: 4rem;
+
+  /* 圓角：玻璃面略寬，仍克制 */
+  --radius-sm: 0px;
+  --radius-md: 4px;
+  --radius-lg: 10px;
+
+  /* 動效 */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --duration-fast: 200ms;
+  --duration-base: 400ms;
+  --duration-slow: 700ms;
+
+  /* 凸出陰影：讓毛玻璃從鋁面浮起 */
+  --shadow-glass:
+    0 1px 0 oklch(100% 0 0 / 0.75) inset,
+    0 -1px 0 oklch(100% 0 0 / 0.12) inset,
+    0 24px 60px -28px oklch(25% 0.03 250 / 0.38),
+    0 8px 22px -14px oklch(25% 0.03 250 / 0.20);
+  --shadow-glass-hover:
+    0 1px 0 oklch(100% 0 0 / 0.85) inset,
+    0 -1px 0 oklch(100% 0 0 / 0.15) inset,
+    0 34px 80px -30px oklch(25% 0.03 250 / 0.45),
+    0 12px 28px -14px oklch(25% 0.03 250 / 0.24);
+}
+
+/* ================================
+ * 2. 基礎重置
+ * ================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  color: var(--color-ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg) var(--space-md);
+  /* 拉絲鋁底：冷光漸層 + 細微拉絲紋，讓毛玻璃有東西可模糊 */
+  background-color: var(--color-bg);
+  background-image:
+    radial-gradient(120% 80% at 12% 0%, oklch(99% 0.012 250 / 0.95), transparent 58%),
+    radial-gradient(110% 70% at 92% 100%, oklch(86% 0.022 250 / 0.75), transparent 55%),
+    radial-gradient(70% 50% at 80% 8%, oklch(90% 0.03 250 / 0.5), transparent 60%),
+    repeating-linear-gradient(125deg, oklch(94% 0.004 250 / 0.55) 0 1px, transparent 1px 5px);
+  background-attachment: fixed;
+}
+
+/* ================================
+ * 3. 名片舞台與入場動畫
+ * ================================ */
+.card-stage {
+  width: 100%;
+  max-width: 600px;
+  perspective: 1200px;
+}
+
+/* 銘牌入場動畫初始狀態 */
+.nameplate {
+  opacity: 0;
+  transform: rotateX(8deg) translateY(40px) scale(0.98);
+  transform-origin: center top;
+  transition:
+    opacity var(--duration-slow) var(--ease-out-expo),
+    transform var(--duration-slow) var(--ease-out-expo),
+    background-color var(--duration-fast) var(--ease-out-quart),
+    border-color var(--duration-fast) var(--ease-out-quart),
+    box-shadow var(--duration-base) var(--ease-out-quart);
+}
+
+.nameplate.is-revealed {
+  opacity: 1;
+  transform: rotateX(0) translateY(0) scale(1);
+}
+
+/* 內部元素依序入場 */
+.nameplate.is-revealed .np-header,
+.nameplate.is-revealed .np-divider,
+.nameplate.is-revealed .np-company,
+.nameplate.is-revealed .np-spec-grid,
+.nameplate.is-revealed .np-services,
+.nameplate.is-revealed .np-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.nameplate .np-header,
+.nameplate .np-divider,
+.nameplate .np-company,
+.nameplate .np-spec-grid,
+.nameplate .np-services,
+.nameplate .np-actions {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity var(--duration-base) var(--ease-out-expo),
+    transform var(--duration-base) var(--ease-out-expo);
+}
+
+/* 依序延遲，創造機械啟動感 */
+.nameplate.is-revealed .np-header    { transition-delay: 120ms; }
+.nameplate.is-revealed .np-divider   { transition-delay: 200ms; }
+.nameplate.is-revealed .np-company   { transition-delay: 280ms; }
+.nameplate.is-revealed .np-spec-grid { transition-delay: 360ms; }
+.nameplate.is-revealed .np-services  { transition-delay: 440ms; }
+.nameplate.is-revealed .np-actions   { transition-delay: 520ms; }
+
+/* ================================
+ * 4. 毛玻璃銘牌本體
+ * ================================ */
+.nameplate {
+  position: relative;
+  /* 半透毛玻璃：背景白色低不透，讓底層拉絲鋁光透出 */
+  background-color: oklch(99% 0.002 250 / 0.55);
+  border: 1px solid oklch(100% 0 0 / 0.6);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-glass);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  backdrop-filter: blur(22px) saturate(140%);
+}
+
+/*
+ * 修正無頭瀏覽器與減少動畫偏好的可見性：
+ * 預設狀態內容就應該可見，is-revealed 只負責加入精細動畫。
+ */
+.nameplate .np-header,
+.nameplate .np-divider,
+.nameplate .np-company,
+.nameplate .np-spec-grid,
+.nameplate .np-services,
+.nameplate .np-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 不支援 backdrop-filter 時的退化：改為不透明白面 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .nameplate {
+    background-color: oklch(99% 0.002 250);
+  }
+}
+
+/* 玻璃頂部高光：模擬邊緣反光 */
+.nameplate-highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    oklch(100% 0 0 / 0.35) 20%,
+    oklch(100% 0 0 / 0.7) 50%,
+    oklch(100% 0 0 / 0.35) 80%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* 底部石墨藍線：稀有而精準的強調 */
+.nameplate-copper-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-primary) 15%,
+    var(--color-primary-soft) 50%,
+    var(--color-primary) 85%,
+    transparent 100%
+  );
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+/* Hover：略微上浮、陰影加深，強化「凸出」感 */
+.nameplate:hover {
+  border-color: oklch(100% 0 0 / 0.75);
+  box-shadow: var(--shadow-glass-hover);
+  transform: translateY(-2px);
+}
+
+/* ================================
+ * 5. 名片標頭區
+ * ================================ */
+.np-header {
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--space-md);
+}
+
+.np-name {
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: 0.03em;
+  color: var(--color-ink);
+  margin: 0 0 var(--space-sm);
+  text-wrap: balance;
+}
+
+.np-title {
+  font-family: var(--font-body);
+  font-size: var(--text-title);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+/* ================================
+ * 6. 分隔線
+ * ================================ */
+.np-divider {
+  position: relative;
+  z-index: 1;
+  height: 1px;
+  background-color: var(--color-border-subtle);
+  margin: var(--space-lg) 0;
+  overflow: visible;
+}
+
+.np-divider::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 48px;
+  height: 3px;
+  background-color: var(--color-primary);
+}
+
+/* ================================
+ * 7. 公司名稱
+ * ================================ */
+.np-company {
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--space-xl);
+}
+
+.np-company-name {
+  font-family: var(--font-display);
+  font-size: var(--text-headline);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  color: var(--color-ink);
+  margin: 0 0 var(--space-xs);
+  text-wrap: balance;
+}
+
+.np-company-meta {
+  font-family: var(--font-body);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  margin: 0;
+}
+
+.np-company-meta span {
+  color: var(--color-primary-soft);
+}
+
+/* ================================
+ * 8. 聯絡規格表（無外框，以分隔線分區）
+ * ================================ */
+.np-spec-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.np-spec-title {
+  grid-column: 1 / -1;
+  font-family: var(--font-body);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+  margin: 0 0 var(--space-sm);
+}
+
+.np-spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.np-spec-label {
+  font-family: var(--font-body);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+  margin: 0;
+}
+
+.np-spec-value {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--color-ink);
+  text-decoration: none;
+  word-break: break-word;
+  transition: color var(--duration-fast) var(--ease-out-quart);
+}
+
+a.np-spec-value:hover {
+  color: var(--color-primary);
+}
+
+a.np-spec-value:focus-visible {
+  outline: 2px solid var(--color-primary-soft);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ================================
+ * 9. 服務項目規格
+ * ================================ */
+.np-services {
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--space-xl);
+}
+
+.np-services-title {
+  font-family: var(--font-body);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+  margin: 0 0 var(--space-md);
+}
+
+.np-services-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.np-service-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background-color: oklch(100% 0 0 / 0.45);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: var(--color-ink-muted);
+  transition:
+    border-color var(--duration-fast) var(--ease-out-quart),
+    color var(--duration-fast) var(--ease-out-quart);
+}
+
+.np-service-item::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-primary);
+  border-radius: 0;
+  flex-shrink: 0;
+}
+
+.np-service-item:hover {
+  border-color: var(--color-border-subtle);
+  color: var(--color-ink);
+}
+
+/* ================================
+ * 10. 行動區
+ * ================================ */
+.np-actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: 0.875rem 2rem;
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease-out-quart),
+    color var(--duration-fast) var(--ease-out-quart),
+    transform var(--duration-fast) var(--ease-out-quart),
+    border-color var(--duration-fast) var(--ease-out-quart),
+    box-shadow var(--duration-fast) var(--ease-out-quart);
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: oklch(99% 0 0);
+  box-shadow: 0 8px 20px -10px oklch(40% 0.07 250 / 0.6);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-soft);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px -10px oklch(40% 0.07 250 / 0.7);
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--color-primary-soft);
+  outline-offset: 3px;
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  background-color: var(--color-primary-deep);
+}
+
+.btn-ghost {
+  background-color: oklch(100% 0 0 / 0.4);
+  color: var(--color-ink-muted);
+  border: 1px solid var(--color-border-subtle);
+}
+
+.btn-ghost:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary-soft);
+  background-color: oklch(100% 0 0 / 0.6);
+}
+
+.btn-ghost:focus-visible {
+  outline: 2px solid var(--color-primary-soft);
+  outline-offset: 3px;
+}
+
+/* ================================
+ * 11. 空值狀態
+ * ================================ */
+.empty-value {
+  color: var(--color-ink-subtle);
+  font-style: italic;
+}
+
+/* ================================
+ * 12. 響應式調整
+ * ================================ */
+@media (max-width: 560px) {
+  body {
+    padding: var(--space-md) var(--space-sm);
+    justify-content: flex-start;
+  }
+
+  .nameplate {
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+  }
+
+  .np-spec-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .np-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+
+/* ================================
+ * 13. 減少動畫偏好
+ * ================================ */
+@media (prefers-reduced-motion: reduce) {
+  .nameplate,
+  .nameplate .np-header,
+  .nameplate .np-divider,
+  .nameplate .np-company,
+  .nameplate .np-spec-grid,
+  .nameplate .np-services,
+  .nameplate .np-actions,
+  .btn,
+  .np-service-item,
+  a.np-spec-value {
+    transition: none;
+  }
+
+  .nameplate {
+    opacity: 1;
+    transform: none;
+  }
+
+  .nameplate .np-header,
+  .nameplate .np-divider,
+  .nameplate .np-company,
+  .nameplate .np-spec-grid,
+  .nameplate .np-services,
+  .nameplate .np-actions {
+    opacity: 1;
+    transform: none;
+  }
+}

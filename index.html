@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <!-- 文件編碼與響應式設定 -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>王小明 | 精準金屬加工股份有限公司</title>
+  <meta name="description" content="精準金屬加工股份有限公司業務經理王小明的數位名片。CNC銑削、車床加工、金屬表面處理、雷射切割。">
+  
+  <!-- Google Fonts：Bree Serif、Saira、Noto Serif TC、Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@400;600;700&family=Saira:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- 名片系統樣式 -->
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+  <!-- 名片舞台 -->
+  <main class="card-stage" aria-label="數位名片">
+    <article class="nameplate" id="nameplate">
+      <!-- 金屬高光與石墨藍線條 -->
+      <span class="nameplate-highlight" aria-hidden="true"></span>
+      <span class="nameplate-copper-line" aria-hidden="true"></span>
+
+      <!-- 標頭：姓名 + 職稱 -->
+      <header class="np-header">
+        <h1 class="np-name" id="cardName">未填寫</h1>
+        <p class="np-title" id="cardTitle">未填寫</p>
+      </header>
+
+      <!-- 分隔線：帶銅色起點 -->
+      <div class="np-divider" aria-hidden="true"></div>
+
+      <!-- 公司名稱與統編 -->
+      <section class="np-company" aria-label="公司資訊">
+        <h2 class="np-company-name" id="cardCompany">未填寫</h2>
+        <p class="np-company-meta">統一編號 <span id="cardTaxId">未填寫</span></p>
+      </section>
+
+      <!-- 聯絡規格表 -->
+      <section class="np-spec-grid" aria-label="聯絡方式">
+        <h3 class="np-spec-title">Contact Spec</h3>
+
+        <div class="np-spec-item">
+          <p class="np-spec-label">電話</p>
+          <a class="np-spec-value" id="cardPhone" href="#">未填寫</a>
+        </div>
+
+        <div class="np-spec-item">
+          <p class="np-spec-label">傳真</p>
+          <span class="np-spec-value" id="cardFax">未填寫</span>
+        </div>
+
+        <div class="np-spec-item">
+          <p class="np-spec-label">電子郵件</p>
+          <a class="np-spec-value" id="cardEmail" href="#">未填寫</a>
+        </div>
+
+        <div class="np-spec-item">
+          <p class="np-spec-label">Line ID</p>
+          <span class="np-spec-value" id="cardLineId">未填寫</span>
+        </div>
+      </section>
+
+      <!-- 服務項目 -->
+      <section class="np-services" aria-label="服務項目">
+        <h3 class="np-services-title">Processing Capabilities</h3>
+        <ul class="np-services-list" id="cardServicesList">
+          <li class="np-service-item">未填寫</li>
+        </ul>
+      </section>
+
+      <!-- 行動區 -->
+      <footer class="np-actions">
+        <a class="btn btn-primary" id="actionCall" href="#" role="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+          撥打電話
+        </a>
+        <a class="btn btn-ghost" id="actionEmail" href="#" role="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          寄送郵件
+        </a>
+      </footer>
+    </article>
+  </main>
+
+  <!-- 載入通用工具與名片邏輯 -->
+  <script src="assets/js/utils.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
