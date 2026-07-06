@@ -6,12 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>王小明 | 精準金屬加工股份有限公司</title>
   <meta name="description" content="精準金屬加工股份有限公司業務經理王小明的數位名片。CNC銑削、車床加工、金屬表面處理、雷射切割。">
-  
+
   <!-- Google Fonts：Bree Serif、Saira、Noto Serif TC、Noto Sans TC -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@400;600;700&family=Saira:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
+
   <!-- 名片系統樣式 -->
   <link rel="stylesheet" href="assets/css/main.css">
 </head>
@@ -19,55 +19,57 @@
   <!-- 名片舞台 -->
   <main class="card-stage" aria-label="數位名片">
     <article class="nameplate" id="nameplate">
-      <!-- 金屬高光與石墨藍線條 -->
-      <span class="nameplate-highlight" aria-hidden="true"></span>
-      <span class="nameplate-copper-line" aria-hidden="true"></span>
+      <!-- 四角 CNC 定位標記 -->
+      <span class="np-tick np-tick-tl" aria-hidden="true"></span>
+      <span class="np-tick np-tick-tr" aria-hidden="true"></span>
+      <span class="np-tick np-tick-bl" aria-hidden="true"></span>
+      <span class="np-tick np-tick-br" aria-hidden="true"></span>
 
-      <!-- 標頭：姓名 + 職稱 -->
-      <header class="np-header">
-        <h1 class="np-name" id="cardName">未填寫</h1>
-        <p class="np-title" id="cardTitle">未填寫</p>
-      </header>
+      <!-- 主體：不對稱雙欄 -->
+      <div class="np-grid">
+        <!-- 左欄：姓名銘牌（視覺重心） -->
+        <header class="np-identity">
+          <p class="np-mark" aria-hidden="true">NAME PLATE</p>
+          <h1 class="np-name" id="cardName"></h1>
+          <p class="np-role"><span id="cardTitle"></span> · <span id="cardCompany"></span></p>
+        </header>
 
-      <!-- 分隔線：帶銅色起點 -->
-      <div class="np-divider" aria-hidden="true"></div>
+        <!-- 右欄：聯絡規格表 -->
+        <section class="np-spec" aria-label="聯絡方式">
+          <ol class="np-spec-list">
+            <li class="np-spec-row" data-key="phone">
+              <span class="np-spec-no">01</span>
+              <span class="np-spec-key">電話</span>
+              <a class="np-spec-val" id="cardPhone" href="#"></a>
+            </li>
+            <li class="np-spec-row" data-key="fax">
+              <span class="np-spec-no">02</span>
+              <span class="np-spec-key">傳真</span>
+              <span class="np-spec-val" id="cardFax"></span>
+            </li>
+            <li class="np-spec-row" data-key="email">
+              <span class="np-spec-no">03</span>
+              <span class="np-spec-key">信箱</span>
+              <a class="np-spec-val" id="cardEmail" href="#"></a>
+            </li>
+            <li class="np-spec-row" data-key="line_id">
+              <span class="np-spec-no">04</span>
+              <span class="np-spec-key">Line</span>
+              <span class="np-spec-val" id="cardLineId"></span>
+            </li>
+            <li class="np-spec-row" data-key="tax_id">
+              <span class="np-spec-no">05</span>
+              <span class="np-spec-key">統編</span>
+              <span class="np-spec-val" id="cardTaxId"></span>
+            </li>
+          </ol>
+        </section>
+      </div>
 
-      <!-- 公司名稱與統編 -->
-      <section class="np-company" aria-label="公司資訊">
-        <h2 class="np-company-name" id="cardCompany">未填寫</h2>
-        <p class="np-company-meta">統一編號 <span id="cardTaxId">未填寫</span></p>
-      </section>
-
-      <!-- 聯絡規格表 -->
-      <section class="np-spec-grid" aria-label="聯絡方式">
-        <h3 class="np-spec-title">Contact Spec</h3>
-
-        <div class="np-spec-item">
-          <p class="np-spec-label">電話</p>
-          <a class="np-spec-value" id="cardPhone" href="#">未填寫</a>
-        </div>
-
-        <div class="np-spec-item">
-          <p class="np-spec-label">傳真</p>
-          <span class="np-spec-value" id="cardFax">未填寫</span>
-        </div>
-
-        <div class="np-spec-item">
-          <p class="np-spec-label">電子郵件</p>
-          <a class="np-spec-value" id="cardEmail" href="#">未填寫</a>
-        </div>
-
-        <div class="np-spec-item">
-          <p class="np-spec-label">Line ID</p>
-          <span class="np-spec-value" id="cardLineId">未填寫</span>
-        </div>
-      </section>
-
-      <!-- 服務項目 -->
+      <!-- 服務項目：横向規格帶 -->
       <section class="np-services" aria-label="服務項目">
-        <h3 class="np-services-title">Processing Capabilities</h3>
+        <p class="np-services-mark" aria-hidden="true">PROCESSING</p>
         <ul class="np-services-list" id="cardServicesList">
-          <li class="np-service-item">未填寫</li>
         </ul>
       </section>
 
@@ -90,7 +92,7 @@
     </article>
   </main>
 
-  <!-- 載入通用工具與名片邏輯 -->
+  <!-- 載入通用工具與名片邏輯（不再使用 API，由 main.js 讀取 mock-data.json） -->
   <script src="assets/js/utils.js"></script>
   <script src="assets/js/main.js"></script>
 </body>

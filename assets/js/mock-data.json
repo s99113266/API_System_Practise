@@ -1,0 +1,22 @@
+{
+  "name": "吳英豪",
+  "title": null,
+  "company": "亞生國際股份有限公司",
+  "tax_id": "90599669",
+  "phone": "0988-397890",
+  "fax": null,
+  "email": "s99113266@gmail.com",
+  "line_id": "s99113266",
+  "services": "網頁設計、APP設計、網路規劃、自動化流程設計、商品行銷合作",
+  "_fields_description": {
+    "name": "姓名",
+    "title": "職稱",
+    "company": "服務單位（公司名稱）",
+    "tax_id": "公司統編",
+    "phone": "連絡電話",
+    "fax": "傳真號碼",
+    "email": "信箱",
+    "line_id": "Line ID",
+    "services": "服務項目（以頓號或逗號分隔）"
+  }
+}

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>名片資料更新</title>
+  <meta name="description" content="更新數位名片資料。">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@400;600;700&family=Saira:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- 名片系統樣式 -->
+  <link rel="stylesheet" href="assets/css/main.css">
+
+  <!-- 更新頁面專屬樣式 -->
+  <style>
+    .update-stage {
+      width: 100%;
+      max-width: 720px;
+    }
+
+    .update-card {
+      position: relative;
+      background-color: var(--color-surface);
+      border: 1px solid oklch(100% 0 0 / 0.55);
+      border-radius: var(--radius-plate);
+      padding: clamp(1.75rem, 5vw, 3rem);
+      box-shadow: var(--shadow-plate);
+      overflow: hidden;
+    }
+
+    .update-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(115deg, transparent 30%, oklch(100% 0 0 / 0.18) 48%, oklch(100% 0 0 / 0.05) 52%, transparent 70%),
+        repeating-linear-gradient(0deg, oklch(82% 0.006 250 / 0.18) 0 1px, transparent 1px 3px),
+        radial-gradient(140% 100% at 0% 0%, oklch(100% 0 0 / 0.5), transparent 55%);
+      opacity: 0.9;
+    }
+
+    .update-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      box-shadow:
+        inset 0 1px 0 oklch(100% 0 0 / 0.85),
+        inset 0 -1px 0 oklch(0% 0 0 / 0.08),
+        inset 1px 0 0 oklch(100% 0 0 / 0.35),
+        inset -1px 0 0 oklch(0% 0 0 / 0.05);
+    }
+
+    .update-header {
+      position: relative;
+      z-index: 1;
+      margin-bottom: var(--space-xl);
+    }
+
+    .update-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.75rem, 5vw, 2.5rem);
+      font-weight: 400;
+      line-height: 1.1;
+      color: var(--color-ink);
+      margin: 0 0 var(--space-sm);
+      text-shadow:
+        0 1px 0 oklch(100% 0 0 / 0.65),
+        0 -1px 0 oklch(0% 0 0 / 0.04);
+    }
+
+    .update-subtitle {
+      font-family: var(--font-body);
+      font-size: 0.9375rem;
+      color: var(--color-ink-muted);
+      margin: 0;
+    }
+
+    .update-form {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-md);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-ink-subtle);
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      color: var(--color-ink);
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-btn);
+      transition:
+        border-color var(--duration-fast) var(--ease-out-quart),
+        box-shadow var(--duration-fast) var(--ease-out-quart);
+    }
+
+    .form-input:hover,
+    .form-textarea:hover {
+      border-color: var(--color-border-subtle);
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--color-primary-soft);
+      box-shadow: 0 0 0 3px oklch(50% 0.08 250 / 0.12);
+    }
+
+    .form-textarea {
+      min-height: 5rem;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+      padding-top: var(--space-lg);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .form-message {
+      grid-column: 1 / -1;
+      min-height: 1.5rem;
+      font-family: var(--font-body);
+      font-size: 0.9375rem;
+      font-weight: 500;
+      text-align: right;
+    }
+
+    .form-message.success { color: oklch(50% 0.1 145); }
+    .form-message.error   { color: oklch(55% 0.16 25); }
+
+    .is-loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 1rem;
+      height: 1rem;
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+      margin-right: var(--space-sm);
+      vertical-align: text-bottom;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 620px) {
+      .update-form {
+        grid-template-columns: 1fr;
+      }
+
+      .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="update-stage" aria-label="名片資料更新">
+    <article class="update-card" id="updateCard">
+      <header class="update-header">
+        <h1 class="update-title">名片資料更新</h1>
+        <p class="update-subtitle">修改下方欄位後送出，將覆寫為最新的名片內容。</p>
+      </header>
+
+      <form class="update-form" id="cardUpdateForm" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="fieldName">姓名</label>
+          <input class="form-input" id="fieldName" name="name" type="text" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="fieldTitle">職稱</label>
+          <input class="form-input" id="fieldTitle" name="title" type="text" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="fieldCompany">公司名稱</label>
+          <input class="form-input" id="fieldCompany" name="company" type="text" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="fieldTaxId">公司統編</label>
+          <input class="form-input" id="fieldTaxId" name="tax_id" type="text" inputmode="numeric">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="fieldPhone">連絡電話</label>
+          <input class="form-input" id="fieldPhone" name="phone" type="tel">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="fieldFax">傳真號碼</label>
+          <input class="form-input" id="fieldFax" name="fax" type="tel">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="fieldEmail">信箱</label>
+          <input class="form-input" id="fieldEmail" name="email" type="email">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="fieldLineId">Line ID</label>
+          <input class="form-input" id="fieldLineId" name="line_id" type="text">
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label" for="fieldServices">服務項目（以頓號、逗號或分號分隔）</label>
+          <textarea class="form-textarea" id="fieldServices" name="services" rows="3" placeholder="CNC銑削、車床加工、金屬表面處理、雷射切割"></textarea>
+        </div>
+
+        <p class="form-message" id="formMessage" aria-live="polite"></p>
+
+        <div class="form-actions">
+          <a class="btn btn-ghost" href="index.html" role="button">返回名片</a>
+          <button class="btn btn-primary" id="submitBtn" type="submit">儲存更新</button>
+        </div>
+      </form>
+    </article>
+  </main>
+
+  <script src="assets/js/utils.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/update.js"></script>
+</body>
+</html>

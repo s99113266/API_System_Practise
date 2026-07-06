@@ -90,6 +90,36 @@ function generateId() {
   return "card-" + Date.now() + "-" + Math.floor(Math.random() * 100000);
 }
 
+/**
+ * API 設定檔快取，避免重複 fetch。
+ * @type {Object|null}
+ */
+let _apiConfigCache = null;
+
+/**
+ * 載入 API 設定檔（assets/api-config.json），並快取結果。
+ * 所有需要 API 的腳本都應透過此函式取得設定，禁止散落硬編碼 URL。
+ * @returns {Promise<Object>} 設定物件，至少包含 apiUrl。
+ */
+async function getApiConfig() {
+  if (_apiConfigCache) return _apiConfigCache;
+  const res = await fetch("assets/api-config.json", { cache: "no-cache" });
+  if (!res.ok) throw new Error("無法載入 API 設定檔（HTTP " + res.status + "）");
+  _apiConfigCache = await res.json();
+  if (!_apiConfigCache || !_apiConfigCache.apiUrl) {
+    throw new Error("API 設定檔缺少 apiUrl 欄位");
+  }
+  return _apiConfigCache;
+}
+
+/**
+ * 取得 API 端點 URL。所有呼叫 API 的腳本一律從此函式取得 URL。
+ * @returns {Promise<string>} API URL 字串。
+ */
+async function getApiUrl() {
+  return (await getApiConfig()).apiUrl;
+}
+
 /* 模組匯出：若環境支援 CommonJS 則使用 module.exports */
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
@@ -99,6 +129,8 @@ if (typeof module !== "undefined" && module.exports) {
     bindEvent,
     safeStringify,
     safeParse,
-    generateId
+    generateId,
+    getApiConfig,
+    getApiUrl
   };
 }
