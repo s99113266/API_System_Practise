@@ -18,5 +18,36 @@
     "email": "信箱",
     "line_id": "Line ID",
     "services": "服務項目（以頓號或逗號分隔）"
+  },
+  "_seo": {
+    "title": null,
+    "description": null,
+    "keywords": null,
+    "author": null,
+    "og_title": null,
+    "og_description": null,
+    "og_image": null,
+    "og_type": null,
+    "og_url": null,
+    "twitter_card": null,
+    "twitter_title": null,
+    "twitter_description": null,
+    "twitter_image": null
+  },
+  "_seo_description": {
+    "title": "瀏覽器分頁標題（<title>）；未填寫時自動由「公司 姓名」組合為「公司 姓名 的名片」",
+    "description": "網頁說明（meta name=\"description\"）；未填寫時自動由名片欄位組合",
+    "keywords": "網頁關鍵字（meta name=\"keywords\"），以逗號分隔；未填寫時整個 meta 標籤不會輸出",
+    "author": "網頁作者（meta name=\"author\"）；未填寫時整個 meta 標籤不會輸出",
+    "og_title": "Open Graph 標題（meta property=\"og:title\"），用於 Facebook / LINE 等社群分享預覽",
+    "og_description": "Open Graph 說明（meta property=\"og:description\"）",
+    "og_image": "Open Graph 分享圖片網址（meta property=\"og:image\"），建議 1200x630",
+    "og_type": "Open Graph 類型（meta property=\"og:type\"），例如 website / profile / article",
+    "og_url": "Open Graph 標準網址（meta property=\"og:url\"）",
+    "twitter_card": "Twitter Card 類型（meta name=\"twitter:card\"），例如 summary / summary_large_image",
+    "twitter_title": "Twitter 標題（meta name=\"twitter:title\"）",
+    "twitter_description": "Twitter 說明（meta name=\"twitter:description\"）",
+    "twitter_image": "Twitter 分享圖片網址（meta name=\"twitter:image\"）"
   }
 }
+

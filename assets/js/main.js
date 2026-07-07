@@ -24,7 +24,7 @@ async function loadMockCardData() {
     if (!raw || typeof raw !== "object") return null;
 
     const card = {};
-    const keys = ["name", "title", "company", "tax_id", "phone", "fax", "email", "line_id", "services"];
+    const keys = ["name", "title", "company", "tax_id", "phone", "fax", "email", "line_id", "services", "_seo"];
     keys.forEach(function (k) { card[k] = raw[k]; });
     return card;
   } catch (error) {
@@ -47,6 +47,39 @@ function isCardDataEmpty(data) {
   return keys.every(function (k) {
     return data[k] === null || data[k] === undefined || String(data[k]).trim() === "";
   });
+}
+
+/**
+ * 取得指定 SEO 欄位的字串值。
+ * 規則：值為 null / undefined / 去頭尾空白後為空字串 → 視為未填寫，回傳空字串。
+ * @param {Object} seo - _seo 物件（可能不存在）。
+ * @param {string} key - SEO 欄位鍵。
+ * @returns {string} 欄位值（已 trim），未填寫回傳空字串。
+ */
+function getSeoValue(seo, key) {
+  if (!seo || typeof seo !== "object") return "";
+  const v = seo[key];
+  if (v === null || v === undefined) return "";
+  return String(v).trim();
+}
+
+/**
+ * 套用 SEO 欄位到 document.head 對應的 <meta> 元素。
+ * 規則：值為空字串時移除整個 <meta>；有值時設定 content。
+ * 選擇器規則：name 屬性比對 <meta name="...">，property 屬性比對 <meta property="...">。
+ * @param {string} selector - CSS 屬性選擇器，{attr} 為佔位符。
+ * @param {string} attr - 屬性名（"name" 或 "property"）。
+ * @param {string} value - 要寫入的 content 值。
+ */
+function applySeoMeta(selector, attr, value) {
+  if (typeof document === "undefined") return;
+  const el = document.querySelector(selector);
+  if (!el) return;
+  if (value === "" || value === null || value === undefined) {
+    el.parentNode && el.parentNode.removeChild(el);
+  } else {
+    el.setAttribute("content", value);
+  }
 }
 
 /**
@@ -159,6 +192,54 @@ function renderBusinessCard(data) {
       identity.style.display = "none";
     }
   }
+
+  // 動態更新瀏覽器分頁標題與 SEO meta：
+  //   1) _seo.title 有填 → 直接使用
+  //   2) 否則依名片欄位組合：name + company 之一
+  //   3) description、keywords、author、og:*、twitter:* 採同樣規則：有值才寫入，無值移除 <meta>
+  if (typeof document !== "undefined" && document.title !== undefined) {
+    const seoTitle = getSeoValue(data._seo, "title");
+    const namePart = hasValue(data.name) ? String(data.name).trim() : "";
+    const companyPart = hasValue(data.company) ? String(data.company).trim() : "";
+
+    if (seoTitle) {
+      document.title = seoTitle;
+    } else {
+      let titleParts = [];
+      if (companyPart) titleParts.push(companyPart);
+      if (namePart) titleParts.push(namePart);
+      document.title = titleParts.length > 0 ? titleParts.join(" ") + " 的名片" : "名片尚未建立";
+    }
+  }
+
+  // description：_seo 優先，未填時由名片欄位組合
+  const seoDescription = getSeoValue(data._seo, "description");
+  if (seoDescription) {
+    applySeoMeta('meta[name="description"]', "name", seoDescription);
+  } else {
+    const namePart = hasValue(data.name) ? String(data.name).trim() : "";
+    const companyPart = hasValue(data.company) ? String(data.company).trim() : "";
+    const rolePart = hasValue(data.title) ? String(data.title).trim() : "";
+    const bits = [];
+    if (companyPart) bits.push(companyPart);
+    if (rolePart) bits.push(rolePart);
+    if (namePart) bits.push(namePart);
+    const fallback = bits.length > 0 ? bits.join("") + "的數位名片。" : "名片資料尚未填寫，請先建立名片內容。";
+    applySeoMeta('meta[name="description"]', "name", fallback);
+  }
+
+  // 其餘 SEO 欄位：有值才寫入，無值移除 <meta>
+  applySeoMeta('meta[name="keywords"]', "name", getSeoValue(data._seo, "keywords"));
+  applySeoMeta('meta[name="author"]',   "name", getSeoValue(data._seo, "author"));
+  applySeoMeta('meta[property="og:title"]',       "property", getSeoValue(data._seo, "og_title"));
+  applySeoMeta('meta[property="og:description"]', "property", getSeoValue(data._seo, "og_description"));
+  applySeoMeta('meta[property="og:image"]',       "property", getSeoValue(data._seo, "og_image"));
+  applySeoMeta('meta[property="og:type"]',        "property", getSeoValue(data._seo, "og_type"));
+  applySeoMeta('meta[property="og:url"]',         "property", getSeoValue(data._seo, "og_url"));
+  applySeoMeta('meta[name="twitter:card"]',        "name", getSeoValue(data._seo, "twitter_card"));
+  applySeoMeta('meta[name="twitter:title"]',       "name", getSeoValue(data._seo, "twitter_title"));
+  applySeoMeta('meta[name="twitter:description"]', "name", getSeoValue(data._seo, "twitter_description"));
+  applySeoMeta('meta[name="twitter:image"]',       "name", getSeoValue(data._seo, "twitter_image"));
 
   // 聯絡規格表：未填寫的列移除，剩下列重新編號
   renderSpecRows(data);
@@ -323,6 +404,8 @@ if (typeof module !== "undefined" && module.exports) {
     loadMockCardData,
     isCardDataEmpty,
     hasValue,
+    getSeoValue,
+    applySeoMeta,
     SPEC_ROWS,
     initCardPage,
     hideCardStage,
