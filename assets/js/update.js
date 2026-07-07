@@ -5,7 +5,7 @@
  * 送出時組裝 9 個欄位並呼叫 updateCardData() 整體覆寫。
  */
 
-const FIELD_NAMES = ["name", "title", "company", "tax_id", "phone", "fax", "email", "line_id", "services"];
+const FIELD_NAMES = ["name", "title", "company", "tax_id", "phone", "fax", "email", "line_id", "address", "map_url", "services"];
 
 /**
  * 初始化更新頁面：載入既有資料並綁定表單提交。
@@ -93,6 +93,8 @@ function fieldLabel(field) {
     fax: "傳真號碼",
     email: "信箱",
     line_id: "Line ID",
+    address: "公司地址",
+    map_url: "Google Maps 連結",
     services: "服務項目"
   };
   return labels[field] || field;

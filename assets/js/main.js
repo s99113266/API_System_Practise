@@ -24,7 +24,7 @@ async function loadMockCardData() {
     if (!raw || typeof raw !== "object") return null;
 
     const card = {};
-    const keys = ["name", "title", "company", "tax_id", "phone", "fax", "email", "line_id", "services", "_seo"];
+    const keys = ["name", "title", "company", "tax_id", "phone", "fax", "email", "line_id", "address", "map_url", "services", "_seo"];
     keys.forEach(function (k) { card[k] = raw[k]; });
     return card;
   } catch (error) {
@@ -43,7 +43,7 @@ async function loadMockCardData() {
  */
 function isCardDataEmpty(data) {
   if (!data || typeof data !== "object") return true;
-  const keys = ["name", "title", "company", "tax_id", "phone", "fax", "email", "line_id", "services"];
+  const keys = ["name", "title", "company", "tax_id", "phone", "fax", "email", "line_id", "address", "map_url", "services"];
   return keys.every(function (k) {
     return data[k] === null || data[k] === undefined || String(data[k]).trim() === "";
   });
@@ -133,11 +133,12 @@ function hasValue(v) {
  * 聯絡規格表列定義（顯示順序、欄位鍵、標籤、是否為可點擊連結）。
  */
 const SPEC_ROWS = [
-  { key: "phone",   label: "電話", type: "tel"    },
-  { key: "fax",     label: "傳真", type: "text"   },
-  { key: "email",   label: "信箱", type: "mailto" },
-  { key: "line_id", label: "Line", type: "text"   },
-  { key: "tax_id",  label: "統編", type: "text"   }
+  { key: "phone",   label: "電話", type: "tel"     },
+  { key: "fax",     label: "傳真", type: "text"    },
+  { key: "email",   label: "信箱", type: "mailto"  },
+  { key: "line_id", label: "Line", type: "text"    },
+  { key: "tax_id",  label: "統編", type: "text"    },
+  { key: "address", label: "地址", type: "address" }
 ];
 
 /**
@@ -331,6 +332,27 @@ function renderSpecRows(data) {
       } else if (def.type === "mailto") {
         valEl.textContent = value;
         if (valEl.tagName === "A") valEl.setAttribute("href", "mailto:" + value);
+      } else if (def.type === "address") {
+        // 地址列：map_url 有填 → 變可點擊連結；沒填 → 純文字
+        const mapUrl = data && data.map_url ? String(data.map_url).trim() : "";
+        if (mapUrl) {
+          let link = valEl;
+          if (valEl.tagName !== "A") {
+            link = document.createElement("a");
+            link.className = "np-spec-val";
+            link.id = valEl.id;
+            valEl.parentNode.replaceChild(link, valEl);
+          }
+          link.textContent = value;
+          link.setAttribute("href", mapUrl);
+          link.setAttribute("target", "_blank");
+          link.setAttribute("rel", "noopener noreferrer");
+          link.classList.add("is-link");
+        } else {
+          if (valEl.tagName === "A") valEl.removeAttribute("href");
+          valEl.textContent = value;
+          valEl.classList.remove("is-link");
+        }
       } else {
         valEl.textContent = value;
         if (valEl.tagName === "A") valEl.setAttribute("href", "#");

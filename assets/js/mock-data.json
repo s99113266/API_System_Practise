@@ -7,6 +7,8 @@
   "fax": null,
   "email": "s99113266@gmail.com",
   "line_id": "s99113266",
+  "address": "臺中市北區健行里忠明路502之1號9樓",
+  "map_url": "https://maps.app.goo.gl/iz9Qb4JjZo5k9BBK7",
   "services": "網頁設計、APP設計、網路規劃、自動化流程設計、商品行銷合作",
   "_fields_description": {
     "name": "姓名",
@@ -17,6 +19,8 @@
     "fax": "傳真號碼",
     "email": "信箱",
     "line_id": "Line ID",
+    "address": "公司地址（單行純文字，例如：台中市西區公益路 100 號 5 樓）",
+    "map_url": "Google Maps 連結；有填此欄位時，名片上的地址會變成可點擊連結",
     "services": "服務項目（以頓號或逗號分隔）"
   },
   "_seo": {
